@@ -19,7 +19,7 @@ export const saveAnalysis = createServerFn({ method: "POST" })
     z.object({
       kind: z.enum(["threat", "url"]),
       input: z.string().min(1).max(4000),
-      report: z.unknown(),
+      report: z.unknown() as z.ZodType<JsonValue>,
       risk_score: z.number().int().min(0).max(100),
     }).parse(d),
   )
