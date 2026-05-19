@@ -9,13 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UrlScannerRouteImport } from './routes/url-scanner'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalyzerRouteImport } from './routes/analyzer'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UrlScannerRoute = UrlScannerRouteImport.update({
+  id: '/url-scanner',
+  path: '/url-scanner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -29,6 +36,11 @@ const NewsRoute = NewsRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnalyzerRoute = AnalyzerRouteImport.update({
@@ -51,26 +63,32 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/analyzer': typeof AnalyzerRoute
+  '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/url-scanner': typeof UrlScannerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/analyzer': typeof AnalyzerRoute
+  '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/url-scanner': typeof UrlScannerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/analyzer': typeof AnalyzerRoute
+  '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/url-scanner': typeof UrlScannerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -78,32 +96,53 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/analyzer'
+    | '/auth'
     | '/dashboard'
     | '/news'
     | '/sitemap.xml'
+    | '/url-scanner'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/analyzer' | '/dashboard' | '/news' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/about'
+    | '/analyzer'
+    | '/auth'
+    | '/dashboard'
+    | '/news'
+    | '/sitemap.xml'
+    | '/url-scanner'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/analyzer'
+    | '/auth'
     | '/dashboard'
     | '/news'
     | '/sitemap.xml'
+    | '/url-scanner'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AnalyzerRoute: typeof AnalyzerRoute
+  AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
   NewsRoute: typeof NewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UrlScannerRoute: typeof UrlScannerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/url-scanner': {
+      id: '/url-scanner'
+      path: '/url-scanner'
+      fullPath: '/url-scanner'
+      preLoaderRoute: typeof UrlScannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -123,6 +162,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/analyzer': {
@@ -153,20 +199,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AnalyzerRoute: AnalyzerRoute,
+  AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
   NewsRoute: NewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UrlScannerRoute: UrlScannerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

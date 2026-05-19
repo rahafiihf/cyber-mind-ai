@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { analyzeThreat, type ThreatReport } from "@/lib/threat-analyzer.functions";
+import { saveAnalysis } from "@/lib/analyses.functions";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { RiskMeter } from "@/components/RiskMeter";
-import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight } from "lucide-react";
+import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight, Crosshair, UserCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/analyzer")({
@@ -16,23 +18,22 @@ interface HistoryEntry { id: string; ts: number; description: string; report: Th
 
 function AnalyzerPage() {
   const { lang, tr } = useLang();
+  const { user, isGuest } = useAuth();
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<ThreatReport | null>(null);
   const fn = useServerFn(analyzeThreat);
+  const save = useServerFn(saveAnalysis);
 
   async function onAnalyze() {
-    if (description.trim().length < 10) {
-      toast.error(lang === "ar" ? "الوصف قصير جداً" : "Description too short");
-      return;
-    }
-    setLoading(true);
-    setReport(null);
+    if (description.trim().length < 10) { toast.error(lang === "ar" ? "الوصف قصير جداً" : "Description too short"); return; }
+    setLoading(true); setReport(null);
     try {
       const r = await fn({ data: { description: description.trim() } });
       setReport(r);
-      // persist to history
-      if (typeof window !== "undefined") {
+      if (user) {
+        try { await save({ data: { kind: "threat", input: description.trim(), report: r as unknown as Record<string, unknown>, risk_score: r.riskScore } }); } catch { /* ignore */ }
+      } else if (typeof window !== "undefined") {
         const raw = localStorage.getItem("cm_history");
         const list: HistoryEntry[] = raw ? JSON.parse(raw) : [];
         list.unshift({ id: crypto.randomUUID(), ts: Date.now(), description: description.trim(), report: r });
@@ -40,11 +41,8 @@ function AnalyzerPage() {
       }
       toast.success(tr("save_history"));
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      toast.error(msg || tr("error"));
-    } finally {
-      setLoading(false);
-    }
+      toast.error(e instanceof Error ? e.message : tr("error"));
+    } finally { setLoading(false); }
   }
 
   return (
@@ -54,24 +52,29 @@ function AnalyzerPage() {
         <p className="text-muted-foreground">{tr("analyzer_sub")}</p>
       </div>
 
+      {!user && (
+        <div className="mb-6 glass rounded-xl p-4 flex items-center gap-3 border border-cyber-cyan/30">
+          <UserCircle className="w-5 h-5 text-cyber-cyan shrink-0" />
+          <p className="text-sm text-muted-foreground flex-1">
+            {isGuest ? tr("guest_banner") : tr("sign_in_to_save")}
+          </p>
+          {!isGuest && (
+            <Link to="/auth" className="text-sm font-semibold text-cyber-cyan hover:text-cyber-blue whitespace-nowrap">
+              {tr("auth_login")} →
+            </Link>
+          )}
+        </div>
+      )}
+
       <div className="glass rounded-2xl p-6 relative overflow-hidden">
         {loading && <div className="absolute inset-0 scanline pointer-events-none" />}
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder={tr("placeholder")}
-          rows={6}
-          maxLength={4000}
-          disabled={loading}
-          className="w-full bg-input/40 rounded-xl p-4 text-sm leading-relaxed border border-border focus:outline-none focus:border-cyber-cyan focus:glow-cyan resize-none font-mono"
-        />
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={tr("placeholder")}
+          rows={6} maxLength={4000} disabled={loading}
+          className="w-full bg-input/40 rounded-xl p-4 text-sm leading-relaxed border border-border focus:outline-none focus:border-cyber-cyan focus:glow-cyan resize-none font-mono" />
         <div className="flex items-center justify-between mt-4">
           <span className="text-xs font-mono text-muted-foreground">{description.length}/4000</span>
-          <button
-            onClick={onAnalyze}
-            disabled={loading || description.trim().length < 10}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] transition"
-          >
+          <button onClick={onAnalyze} disabled={loading || description.trim().length < 10}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] transition">
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
             {loading ? tr("analyzing") : tr("analyze_btn")}
           </button>
@@ -97,18 +100,18 @@ function AnalyzerPage() {
 function ReportView({ report }: { report: ThreatReport }) {
   const { lang, tr } = useLang();
   const ar = lang === "ar";
-  const items: Array<{ icon: React.ElementType; label: string; value: string }> = [
+  const items = [
     { icon: AlertTriangle, label: tr("threat_type"), value: ar ? report.threatTypeAr : report.threatType },
     { icon: Target, label: tr("entry_point"), value: ar ? report.entryPointAr : report.entryPoint },
     { icon: Activity, label: tr("attacker_behavior"), value: ar ? report.attackerBehaviorAr : report.attackerBehavior },
     { icon: Brain, label: tr("next_move"), value: ar ? report.nextMoveAr : report.nextMove },
   ];
-
-  const lists: Array<{ icon: React.ElementType; label: string; items: string[] }> = [
+  const lists = [
     { icon: Zap, label: tr("immediate"), items: ar ? report.immediateActionsAr : report.immediateActions },
     { icon: ShieldCheck, label: tr("longterm"), items: ar ? report.longTermProtectionAr : report.longTermProtection },
     { icon: Brain, label: tr("device"), items: ar ? report.deviceHardeningAr : report.deviceHardening },
   ];
+  const whyList = ar ? report.whyTargetedAr : report.whyTargeted;
 
   return (
     <div className="mt-10 space-y-6 animate-in fade-in">
@@ -120,6 +123,31 @@ function ReportView({ report }: { report: ThreatReport }) {
           <p className="text-lg leading-relaxed">{ar ? report.summaryAr : report.summary}</p>
         </div>
       </div>
+
+      {whyList?.length > 0 && (
+        <div className="glass rounded-2xl p-6 sm:p-8 relative overflow-hidden border border-cyber-cyan/30">
+          <div className="absolute -top-12 -start-12 w-64 h-64 bg-cyber-cyan/15 blur-3xl rounded-full pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-cyber-cyan/10 flex items-center justify-center">
+                <Crosshair className="w-5 h-5 text-cyber-cyan" />
+              </div>
+              <div>
+                <h3 className="display text-2xl font-bold text-gradient">{tr("why_targeted")}</h3>
+                <p className="text-xs text-muted-foreground">{tr("why_targeted_sub")}</p>
+              </div>
+            </div>
+            <ul className="space-y-3 mt-5">
+              {whyList.map((it, idx) => (
+                <li key={idx} className="flex gap-3 items-start p-3 rounded-xl bg-secondary/30 border border-border/50 hover:border-cyber-cyan/40 transition">
+                  <div className="w-6 h-6 rounded-full bg-cyber-cyan/20 text-cyber-cyan flex items-center justify-center text-xs font-mono shrink-0 mt-0.5">{idx + 1}</div>
+                  <span className="text-sm leading-relaxed">{it}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 gap-4">
         {items.map((i) => (

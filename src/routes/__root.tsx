@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { LanguageProvider } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
@@ -95,14 +96,16 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <Outlet />
-          </main>
-          <Footer />
-          <Toaster theme="dark" position="top-center" />
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <Footer />
+            <Toaster theme="dark" position="top-center" />
+          </div>
+        </AuthProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );
