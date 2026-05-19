@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
+import { listAnalyses, clearAnalyses, type AnalysisRow } from "@/lib/analyses.functions";
 import type { ThreatReport } from "@/lib/threat-analyzer.functions";
-import { Activity, AlertTriangle, ShieldAlert, Trash2 } from "lucide-react";
+import type { UrlReport } from "@/lib/url-analyzer.functions";
+import { Activity, AlertTriangle, ShieldAlert, Trash2, Link2, Zap } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 export const Route = createFileRoute("/dashboard")({
@@ -10,30 +14,50 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Risk Dashboard — CyberMind AI" }] }),
 });
 
-interface HistoryEntry { id: string; ts: number; description: string; report: ThreatReport; }
+interface Entry { id: string; ts: number; kind: "threat" | "url"; label: string; sub: string; score: number; }
 
 function DashboardPage() {
   const { lang, tr } = useLang();
-  const [list, setList] = useState<HistoryEntry[]>([]);
+  const { user, loading: authLoading } = useAuth();
+  const [list, setList] = useState<Entry[]>([]);
+  const fetchRemote = useServerFn(listAnalyses);
+  const clearRemote = useServerFn(clearAnalyses);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const raw = localStorage.getItem("cm_history");
-    setList(raw ? JSON.parse(raw) : []);
-  }, []);
+    if (authLoading) return;
+    if (user) {
+      fetchRemote({}).then((rows: AnalysisRow[]) => {
+        setList(rows.map((r) => entryFromRow(r, lang)));
+      }).catch(() => setList([]));
+    } else if (typeof window !== "undefined") {
+      const threatRaw = localStorage.getItem("cm_history");
+      const urlRaw = localStorage.getItem("cm_url_history");
+      const merged: Entry[] = [];
+      if (threatRaw) {
+        const arr = JSON.parse(threatRaw) as Array<{ id: string; ts: number; description: string; report: ThreatReport }>;
+        arr.forEach((e) => merged.push({ id: e.id, ts: e.ts, kind: "threat", label: lang === "ar" ? e.report.threatTypeAr : e.report.threatType, sub: e.description, score: e.report.riskScore }));
+      }
+      if (urlRaw) {
+        const arr = JSON.parse(urlRaw) as Array<{ id: string; ts: number; url: string; report: UrlReport }>;
+        arr.forEach((e) => merged.push({ id: e.id, ts: e.ts, kind: "url", label: lang === "ar" ? e.report.verdictAr : e.report.verdict, sub: e.url, score: e.report.riskScore }));
+      }
+      merged.sort((a, b) => b.ts - a.ts);
+      setList(merged);
+    }
+  }, [user, authLoading, lang, fetchRemote]);
 
-  const clear = () => { localStorage.removeItem("cm_history"); setList([]); };
+  const clear = async () => {
+    if (user) { await clearRemote({}); }
+    else { localStorage.removeItem("cm_history"); localStorage.removeItem("cm_url_history"); }
+    setList([]);
+  };
 
-  const avg = list.length ? Math.round(list.reduce((a, b) => a + b.report.riskScore, 0) / list.length) : 0;
-  const critical = list.filter((e) => e.report.riskScore >= 80).length;
-
+  const avg = list.length ? Math.round(list.reduce((a, b) => a + b.score, 0) / list.length) : 0;
+  const critical = list.filter((e) => e.score >= 80).length;
   const typeMap = new Map<string, number>();
-  list.forEach((e) => {
-    const k = lang === "ar" ? e.report.threatTypeAr : e.report.threatType;
-    typeMap.set(k, (typeMap.get(k) || 0) + 1);
-  });
+  list.forEach((e) => typeMap.set(e.label, (typeMap.get(e.label) || 0) + 1));
   const pieData = Array.from(typeMap.entries()).map(([name, value]) => ({ name, value }));
-  const barData = list.slice(0, 8).reverse().map((e, i) => ({ name: `#${i + 1}`, risk: e.report.riskScore }));
+  const barData = list.slice(0, 8).reverse().map((e, i) => ({ name: `#${i + 1}`, risk: e.score }));
   const colors = ["#00e5ff", "#3b82f6", "#a855f7", "#f59e0b", "#ef4444", "#10b981"];
 
   return (
@@ -97,16 +121,18 @@ function DashboardPage() {
             <p className="text-xs font-mono uppercase tracking-widest text-cyber-cyan mb-4">{tr("history")}</p>
             <div className="space-y-2">
               {list.map((e) => {
-                const score = e.report.riskScore;
+                const score = e.score;
                 const color = score >= 80 ? "var(--danger)" : score >= 50 ? "var(--warning)" : "var(--success)";
+                const Icon = e.kind === "url" ? Link2 : Zap;
                 return (
                   <div key={e.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-secondary/40 transition border border-transparent hover:border-border">
                     <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold display shrink-0" style={{ background: `${color}20`, color, boxShadow: `0 0 12px ${color}40` }}>
                       {score}
                     </div>
+                    <Icon className="w-4 h-4 text-cyber-cyan shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm truncate">{lang === "ar" ? e.report.threatTypeAr : e.report.threatType}</p>
-                      <p className="text-xs text-muted-foreground truncate">{e.description}</p>
+                      <p className="font-semibold text-sm truncate">{e.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{e.sub}</p>
                     </div>
                     <span className="text-xs font-mono text-muted-foreground shrink-0">{new Date(e.ts).toLocaleDateString()}</span>
                   </div>
@@ -118,6 +144,16 @@ function DashboardPage() {
       )}
     </div>
   );
+}
+
+function entryFromRow(r: AnalysisRow, lang: string): Entry {
+  const ts = new Date(r.created_at).getTime();
+  if (r.kind === "url") {
+    const rep = r.report as unknown as UrlReport;
+    return { id: r.id, ts, kind: "url", label: lang === "ar" ? rep.verdictAr : rep.verdict, sub: r.input, score: r.risk_score };
+  }
+  const rep = r.report as unknown as ThreatReport;
+  return { id: r.id, ts, kind: "threat", label: lang === "ar" ? rep.threatTypeAr : rep.threatType, sub: r.input, score: r.risk_score };
 }
 
 function StatCard({ icon: Icon, label, value, color, suffix }: { icon: React.ElementType; label: string; value: number; color: string; suffix?: string }) {
