@@ -2,11 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+type JsonValue = string | number | boolean | null | { [k: string]: JsonValue } | JsonValue[];
+
 export type AnalysisRow = {
   id: string;
   kind: "threat" | "url";
   input: string;
-  report: unknown;
+  report: JsonValue;
   risk_score: number;
   created_at: string;
 };
