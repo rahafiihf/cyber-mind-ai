@@ -72,8 +72,22 @@ function AnalyzerPage() {
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={tr("placeholder")}
           rows={6} maxLength={4000} disabled={loading}
           className="w-full bg-input/40 rounded-xl p-4 text-sm leading-relaxed border border-border focus:outline-none focus:border-cyber-cyan focus:glow-cyan resize-none font-mono" />
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xs font-mono text-muted-foreground">{description.length}/4000</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div className="flex items-center gap-3">
+            <VoiceInput onTranscript={setDescription} disabled={loading} />
+            <button
+              type="button"
+              onClick={() => setBeginner(!beginner)}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs transition ${
+                beginner ? "border-cyber-cyan bg-cyber-cyan/10 text-cyber-cyan" : "border-border hover:border-cyber-cyan/60"
+              }`}
+              title={tr("beginner_hint")}
+            >
+              <GraduationCap className="w-4 h-4" />
+              {tr("beginner_mode")}
+            </button>
+            <span className="text-xs font-mono text-muted-foreground">{description.length}/4000</span>
+          </div>
           <button onClick={onAnalyze} disabled={loading || description.trim().length < 10}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] transition">
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
