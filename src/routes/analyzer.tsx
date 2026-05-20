@@ -6,8 +6,9 @@ import { saveAnalysis } from "@/lib/analyses.functions";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { RiskMeter } from "@/components/RiskMeter";
-import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight, Crosshair, UserCircle } from "lucide-react";
+import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight, Crosshair, UserCircle, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
+import { VoiceInput } from "@/components/VoiceInput";
 
 export const Route = createFileRoute("/analyzer")({
   component: AnalyzerPage,
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/analyzer")({
 interface HistoryEntry { id: string; ts: number; description: string; report: ThreatReport; }
 
 function AnalyzerPage() {
-  const { lang, tr } = useLang();
+  const { lang, tr, beginner, setBeginner } = useLang();
   const { user, isGuest } = useAuth();
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ function AnalyzerPage() {
     if (description.trim().length < 10) { toast.error(lang === "ar" ? "الوصف قصير جداً" : "Description too short"); return; }
     setLoading(true); setReport(null);
     try {
-      const r = await fn({ data: { description: description.trim() } });
+      const r = await fn({ data: { description: description.trim(), beginner } });
       setReport(r);
       if (user) {
         try { await save({ data: { kind: "threat", input: description.trim(), report: r as unknown as Record<string, unknown>, risk_score: r.riskScore } }); } catch { /* ignore */ }
