@@ -14,6 +14,7 @@ import { AuthProvider } from "@/lib/auth";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { Chatbot } from "@/components/Chatbot";
 
 function NotFoundComponent() {
   return (
@@ -103,6 +104,7 @@ function RootComponent() {
               <Outlet />
             </main>
             <Footer />
+            <Chatbot />
             <Toaster theme="dark" position="top-center" />
           </div>
         </AuthProvider>

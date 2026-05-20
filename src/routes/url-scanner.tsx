@@ -5,7 +5,7 @@ import { analyzeUrl, type UrlReport } from "@/lib/url-analyzer.functions";
 import { saveAnalysis } from "@/lib/analyses.functions";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
-import { Loader2, Link2, ShieldAlert, ShieldCheck, AlertTriangle, Globe, Lock, Eye, ChevronRight, Skull } from "lucide-react";
+import { Loader2, Link2, ShieldAlert, ShieldCheck, AlertTriangle, Globe, Lock, Eye, ChevronRight, Skull, GraduationCap, GitCompare, X, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/url-scanner")({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/url-scanner")({
 interface HistoryEntry { id: string; ts: number; url: string; report: UrlReport; }
 
 function UrlScannerPage() {
-  const { lang, tr } = useLang();
+  const { lang, tr, beginner, setBeginner } = useLang();
   const { user } = useAuth();
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ function UrlScannerPage() {
     if (url.trim().length < 4) { toast.error(lang === "ar" ? "أدخل رابطاً صحيحاً" : "Enter a valid URL"); return; }
     setLoading(true); setReport(null);
     try {
-      const r = await fn({ data: { url: url.trim() } });
+      const r = await fn({ data: { url: url.trim(), beginner } });
       setReport(r);
       if (user) {
         try { await save({ data: { kind: "url", input: url.trim(), report: r as unknown as Record<string, unknown>, risk_score: r.riskScore } }); } catch { /* ignore */ }
@@ -45,7 +45,7 @@ function UrlScannerPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
+    <div className="max-w-6xl mx-auto px-6 py-16">
       <div className="text-center mb-10">
         <h1 className="display text-4xl sm:text-5xl font-bold text-gradient mb-3">{tr("url_title")}</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">{tr("url_sub")}</p>
@@ -65,6 +65,20 @@ function UrlScannerPage() {
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldAlert className="w-5 h-5" />}
             {loading ? tr("analyzing") : tr("url_scan")}
           </button>
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setBeginner(!beginner)}
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs transition ${
+              beginner ? "border-cyber-cyan bg-cyber-cyan/10 text-cyber-cyan" : "border-border hover:border-cyber-cyan/60"
+            }`}
+            title={tr("beginner_hint")}
+          >
+            <GraduationCap className="w-4 h-4" />
+            {tr("beginner_mode")}
+          </button>
+          <span className="text-xs text-muted-foreground">{beginner ? tr("beginner_hint") : ""}</span>
         </div>
       </div>
 
@@ -127,6 +141,10 @@ function UrlReportView({ report }: { report: UrlReport }) {
         </div>
       </div>
 
+      {report.comparison && report.comparison.length > 0 && (
+        <ComparisonView report={report} />
+      )}
+
       <div className="grid sm:grid-cols-2 gap-4">
         {fields.map((f) => (
           <div key={f.label} className="glass rounded-xl p-5">
@@ -156,6 +174,78 @@ function UrlReportView({ report }: { report: UrlReport }) {
             </ul>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function ComparisonView({ report }: { report: UrlReport }) {
+  const { lang, tr } = useLang();
+  const ar = lang === "ar";
+
+  return (
+    <div className="glass rounded-2xl p-6 sm:p-8 relative overflow-hidden border border-cyber-cyan/30">
+      <div className="absolute -top-12 -end-12 w-72 h-72 bg-cyber-cyan/10 blur-3xl rounded-full pointer-events-none" />
+      <div className="relative">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-cyber-cyan/10 flex items-center justify-center">
+            <GitCompare className="w-5 h-5 text-cyber-cyan" />
+          </div>
+          <div>
+            <h3 className="display text-2xl font-bold text-gradient">{tr("compare_title")}</h3>
+            <p className="text-xs text-muted-foreground">{tr("compare_sub")}</p>
+          </div>
+        </div>
+
+        {/* URL bars */}
+        <div className="grid md:grid-cols-2 gap-3 mt-5">
+          <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-7 h-7 rounded-full bg-destructive/20 text-destructive flex items-center justify-center"><X className="w-4 h-4" /></span>
+              <span className="text-xs font-mono uppercase tracking-widest text-destructive">{tr("compare_fake")}</span>
+            </div>
+            <div className="font-mono text-xs break-all bg-background/40 rounded p-2 border border-destructive/30">
+              {report.parsedDomain}
+            </div>
+          </div>
+          <div className="rounded-xl border border-success/40 bg-success/5 p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-7 h-7 rounded-full bg-success/20 text-success flex items-center justify-center"><Check className="w-4 h-4" /></span>
+              <span className="text-xs font-mono uppercase tracking-widest text-success">{tr("compare_real")}</span>
+            </div>
+            <div className="font-mono text-xs break-all bg-background/40 rounded p-2 border border-success/30">
+              {report.comparedDomain || "—"}
+            </div>
+          </div>
+        </div>
+
+        {/* Side-by-side comparison rows */}
+        <div className="mt-5 rounded-xl overflow-hidden border border-border">
+          <div className="grid grid-cols-12 bg-secondary/40 text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            <div className="col-span-3 p-3 border-e border-border">{tr("compare_aspect")}</div>
+            <div className="col-span-4 sm:col-span-4 p-3 border-e border-border text-destructive">{tr("compare_fake")}</div>
+            <div className="col-span-5 sm:col-span-5 p-3 text-success">{tr("compare_real")}</div>
+          </div>
+          {report.comparison.map((c, i) => (
+            <div key={i} className="grid grid-cols-12 border-t border-border text-sm hover:bg-secondary/20 transition">
+              <div className="col-span-3 p-3 border-e border-border font-semibold text-foreground/90">
+                {ar ? c.aspectAr : c.aspect}
+              </div>
+              <div className="col-span-4 p-3 border-e border-border bg-destructive/5">
+                <div className="flex gap-2">
+                  <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground leading-relaxed">{ar ? c.fakeAr : c.fake}</span>
+                </div>
+              </div>
+              <div className="col-span-5 p-3 bg-success/5">
+                <div className="flex gap-2">
+                  <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground leading-relaxed">{ar ? c.realAr : c.real}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

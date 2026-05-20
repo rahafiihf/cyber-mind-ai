@@ -102,17 +102,40 @@ export const t: Dict = {
   verdict_suspicious: { en: "Suspicious", ar: "مشبوه" },
   verdict_phishing: { en: "Phishing", ar: "تصيّد" },
   verdict_malicious: { en: "Malicious", ar: "خبيث" },
+
+  // Beginner mode + voice + chatbot + comparison
+  beginner_mode: { en: "Beginner Mode", ar: "وضع المبتدئ" },
+  beginner_on: { en: "Beginner Mode: ON — simple language", ar: "وضع المبتدئ: مُفعّل — لغة مبسّطة" },
+  beginner_off: { en: "Beginner Mode: OFF — expert language", ar: "وضع المبتدئ: مُعطّل — لغة متخصصة" },
+  beginner_hint: { en: "Reports use simple language and define every technical term.", ar: "التقارير تُكتب بلغة بسيطة وتشرح كل مصطلح تقني." },
+  voice_input: { en: "Voice Input", ar: "إدخال صوتي" },
+  voice_listening: { en: "Listening… speak now", ar: "أستمع… تكلّم الآن" },
+  bot_title: { en: "AI Security Assistant", ar: "المساعد الأمني الذكي" },
+  bot_open: { en: "Ask AI Assistant", ar: "اسأل المساعد الذكي" },
+  compare_title: { en: "Fake vs Original Comparison", ar: "مقارنة المزيف مقابل الأصلي" },
+  compare_sub: { en: "Side-by-side breakdown of how the fake site mimics the real one.", ar: "مقارنة جنباً إلى جنب تكشف كيف يقلّد الموقع المزيف الأصلي." },
+  compare_fake: { en: "Suspicious Site", ar: "الموقع المشبوه" },
+  compare_real: { en: "Official Site", ar: "الموقع الرسمي" },
+  compare_aspect: { en: "Aspect", ar: "العنصر" },
 };
 
-interface Ctx { lang: Lang; setLang: (l: Lang) => void; tr: (k: keyof typeof t) => string; }
+interface Ctx {
+  lang: Lang;
+  setLang: (l: Lang) => void;
+  tr: (k: keyof typeof t) => string;
+  beginner: boolean;
+  setBeginner: (b: boolean) => void;
+}
 const LangCtx = createContext<Ctx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
+  const [beginner, setBeginnerState] = useState<boolean>(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = (localStorage.getItem("cm_lang") as Lang) || "en";
     setLangState(saved);
+    setBeginnerState(localStorage.getItem("cm_beginner") === "1");
   }, []);
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -123,8 +146,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     if (typeof window !== "undefined") localStorage.setItem("cm_lang", l);
   };
+  const setBeginner = (b: boolean) => {
+    setBeginnerState(b);
+    if (typeof window !== "undefined") localStorage.setItem("cm_beginner", b ? "1" : "0");
+  };
   const tr = (k: keyof typeof t) => t[k][lang];
-  return <LangCtx.Provider value={{ lang, setLang, tr }}>{children}</LangCtx.Provider>;
+  return <LangCtx.Provider value={{ lang, setLang, tr, beginner, setBeginner }}>{children}</LangCtx.Provider>;
 }
 
 export function useLang() {

@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Shield, Globe, LogOut, User as UserIcon, Menu, X } from "lucide-react";
+import { Shield, Globe, LogOut, User as UserIcon, Menu, X, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 
 export function Navbar() {
-  const { lang, setLang, tr } = useLang();
+  const { lang, setLang, tr, beginner, setBeginner } = useLang();
   const { user, isGuest, signOut } = useAuth();
   const [open, setOpen] = useState(false);
 
@@ -40,6 +40,18 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setBeginner(!beginner)}
+            title={beginner ? tr("beginner_on") : tr("beginner_off")}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm transition ${
+              beginner
+                ? "border-cyber-cyan bg-cyber-cyan/15 text-cyber-cyan glow-cyan"
+                : "border-border/60 hover:border-cyber-cyan/60"
+            }`}
+          >
+            <GraduationCap className="w-4 h-4" />
+            <span className="font-mono hidden md:inline">{tr("beginner_mode")}</span>
+          </button>
           <button onClick={() => setLang(lang === "en" ? "ar" : "en")}
             className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-border/60 hover:border-cyber-cyan/60 hover:glow-cyan text-sm transition">
             <Globe className="w-4 h-4" />

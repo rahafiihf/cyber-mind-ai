@@ -6,8 +6,9 @@ import { saveAnalysis } from "@/lib/analyses.functions";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { RiskMeter } from "@/components/RiskMeter";
-import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight, Crosshair, UserCircle } from "lucide-react";
+import { Loader2, Zap, AlertTriangle, Activity, Target, Brain, ShieldCheck, ChevronRight, Crosshair, UserCircle, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
+import { VoiceInput } from "@/components/VoiceInput";
 
 export const Route = createFileRoute("/analyzer")({
   component: AnalyzerPage,
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/analyzer")({
 interface HistoryEntry { id: string; ts: number; description: string; report: ThreatReport; }
 
 function AnalyzerPage() {
-  const { lang, tr } = useLang();
+  const { lang, tr, beginner, setBeginner } = useLang();
   const { user, isGuest } = useAuth();
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ function AnalyzerPage() {
     if (description.trim().length < 10) { toast.error(lang === "ar" ? "الوصف قصير جداً" : "Description too short"); return; }
     setLoading(true); setReport(null);
     try {
-      const r = await fn({ data: { description: description.trim() } });
+      const r = await fn({ data: { description: description.trim(), beginner } });
       setReport(r);
       if (user) {
         try { await save({ data: { kind: "threat", input: description.trim(), report: r as unknown as Record<string, unknown>, risk_score: r.riskScore } }); } catch { /* ignore */ }
@@ -71,8 +72,22 @@ function AnalyzerPage() {
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={tr("placeholder")}
           rows={6} maxLength={4000} disabled={loading}
           className="w-full bg-input/40 rounded-xl p-4 text-sm leading-relaxed border border-border focus:outline-none focus:border-cyber-cyan focus:glow-cyan resize-none font-mono" />
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xs font-mono text-muted-foreground">{description.length}/4000</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
+          <div className="flex items-center gap-3">
+            <VoiceInput onTranscript={setDescription} disabled={loading} />
+            <button
+              type="button"
+              onClick={() => setBeginner(!beginner)}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs transition ${
+                beginner ? "border-cyber-cyan bg-cyber-cyan/10 text-cyber-cyan" : "border-border hover:border-cyber-cyan/60"
+              }`}
+              title={tr("beginner_hint")}
+            >
+              <GraduationCap className="w-4 h-4" />
+              {tr("beginner_mode")}
+            </button>
+            <span className="text-xs font-mono text-muted-foreground">{description.length}/4000</span>
+          </div>
           <button onClick={onAnalyze} disabled={loading || description.trim().length < 10}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] transition">
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
