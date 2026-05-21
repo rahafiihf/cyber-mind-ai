@@ -22,14 +22,12 @@ export type ThreatReport = {
   whyTargetedAr: string[];
 };
 
-const SYSTEM_BASE = `You are CyberMind AI, an elite cybersecurity analyst agent.
+const SYSTEM = `You are CyberMind AI, an elite cybersecurity analyst agent.
 Given a user-described suspicious activity, return a complete forensic threat report.
 Always respond ONLY with valid JSON matching the requested schema. Provide BOTH English and Arabic for every field.
 riskScore: integer 0-100. Be calibrated: phishing-click without creds=30-50, credential theft=70-85, ransomware/active intrusion=85-100, vague reports=15-30.
 Arrays should have 3-5 concise actionable items each. Keep each item under 18 words.
 whyTargeted: 3-5 SPECIFIC, intelligent reasons WHY this user was likely targeted. Be psychological and personalized: leaked email in past breach, weak/reused passwords, prior risky clicks, mass campaign vs targeted, device/network vulnerabilities, social-engineering profile. Sound smart, not generic.`;
-
-const BEGINNER_ADDON = `\n\nBEGINNER MODE: The reader is a student or non-technical user. Write EVERY text field in simple everyday language. Define each technical term inline in plain words or short analogies (e.g. "phishing — fake messages that trick you into clicking"). No jargon. Short friendly sentences. Same rule applies to BOTH English and Arabic fields.`;
 
 const SCHEMA_HINT = `{
   "threatType": "string", "threatTypeAr": "نوع التهديد بالعربية",
@@ -45,17 +43,15 @@ const SCHEMA_HINT = `{
 }`;
 
 export const analyzeThreat = createServerFn({ method: "POST" })
-  .inputValidator((d: { description: string; beginner?: boolean }) => {
+  .inputValidator((d: { description: string }) => {
     if (!d?.description || typeof d.description !== "string") throw new Error("description required");
     if (d.description.length < 10) throw new Error("description too short");
-    if (d.description.length > 4000) throw new Error("description too long");
-    return { description: d.description, beginner: Boolean(d.beginner) };
+    if (d.description.length > 50000) throw new Error("description too long");
+    return { description: d.description };
   })
   .handler(async ({ data }): Promise<ThreatReport> => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
-
-    const SYSTEM = SYSTEM_BASE + (data.beginner ? BEGINNER_ADDON : "");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

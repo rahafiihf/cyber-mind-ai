@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UrlScannerRouteImport } from './routes/url-scanner'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PhoneScannerRouteImport } from './routes/phone-scanner'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -26,6 +27,11 @@ const UrlScannerRoute = UrlScannerRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhoneScannerRoute = PhoneScannerRouteImport.update({
+  id: '/phone-scanner',
+  path: '/phone-scanner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
+  '/phone-scanner': typeof PhoneScannerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/url-scanner': typeof UrlScannerRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
+  '/phone-scanner': typeof PhoneScannerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/url-scanner': typeof UrlScannerRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/news': typeof NewsRoute
+  '/phone-scanner': typeof PhoneScannerRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/url-scanner': typeof UrlScannerRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/news'
+    | '/phone-scanner'
     | '/sitemap.xml'
     | '/url-scanner'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/news'
+    | '/phone-scanner'
     | '/sitemap.xml'
     | '/url-scanner'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/news'
+    | '/phone-scanner'
     | '/sitemap.xml'
     | '/url-scanner'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
   NewsRoute: typeof NewsRoute
+  PhoneScannerRoute: typeof PhoneScannerRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UrlScannerRoute: typeof UrlScannerRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phone-scanner': {
+      id: '/phone-scanner'
+      path: '/phone-scanner'
+      fullPath: '/phone-scanner'
+      preLoaderRoute: typeof PhoneScannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
   NewsRoute: NewsRoute,
+  PhoneScannerRoute: PhoneScannerRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UrlScannerRoute: UrlScannerRoute,
 }

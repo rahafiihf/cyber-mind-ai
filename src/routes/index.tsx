@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useLang } from "@/lib/i18n";
-import { Shield, Zap, Target, Brain, ArrowRight, Activity, Lock, Radar } from "lucide-react";
+import { Shield, Zap, Phone, Brain, ArrowRight, Activity, Lock, Radar, Target, Link2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -11,7 +11,7 @@ function Index() {
   const features = [
     { icon: Radar, t: tr("feature_1_t"), d: tr("feature_1_d") },
     { icon: Target, t: tr("feature_2_t"), d: tr("feature_2_d") },
-    { icon: Activity, t: tr("feature_3_t"), d: tr("feature_3_d") },
+    { icon: Phone, t: tr("feature_3_t"), d: tr("feature_3_d") },
     { icon: Brain, t: tr("feature_4_t"), d: tr("feature_4_d") },
   ];
 
@@ -29,25 +29,24 @@ function Index() {
             <span className="text-gradient">{tr("hero_title")}</span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground mb-10">{tr("hero_sub")}</p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              to="/analyzer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan hover:scale-[1.03] transition"
-            >
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link to="/analyzer" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-cyber text-primary-foreground font-semibold glow-cyan hover:scale-[1.03] transition">
               <Zap className="w-5 h-5" />
               {tr("cta_analyze")}
               <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
-            <Link to="/dashboard" className="px-6 py-3 rounded-lg border border-border hover:border-cyber-cyan/60 transition font-semibold">
-              {tr("cta_dashboard")}
+            <Link to="/url-scanner" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cyber-cyan/40 hover:border-cyber-cyan hover:bg-cyber-cyan/10 transition font-semibold">
+              <Link2 className="w-4 h-4" /> {tr("cta_url")}
+            </Link>
+            <Link to="/phone-scanner" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-cyber-cyan/40 hover:border-cyber-cyan hover:bg-cyber-cyan/10 transition font-semibold">
+              <Phone className="w-4 h-4" /> {tr("cta_phone")}
             </Link>
           </div>
 
-          {/* Floating sensor card */}
           <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {[
               { k: "Phishing", v: "+38%" },
-              { k: "Ransomware", v: "+12%" },
+              { k: "Scam Calls", v: "+54%" },
               { k: "Zero-days", v: "247" },
               { k: "AI Models", v: "ONLINE" },
             ].map((s) => (
@@ -60,7 +59,6 @@ function Index() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((f) => (
@@ -74,7 +72,6 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA strip */}
       <section className="max-w-7xl mx-auto px-6 py-16">
         <div className="glass rounded-3xl p-10 sm:p-14 text-center relative overflow-hidden scanline">
           <Lock className="w-12 h-12 text-cyber-cyan mx-auto mb-5" strokeWidth={1.5} />

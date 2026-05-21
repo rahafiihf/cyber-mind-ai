@@ -34,7 +34,7 @@ export type UrlReport = {
   comparison: ComparisonItem[];
 };
 
-const SYSTEM_BASE = `You are CyberMind AI, an elite phishing-detection analyst.
+const SYSTEM = `You are CyberMind AI, an elite phishing-detection analyst.
 Given a suspicious URL, analyze it for phishing, scam, fake government/bank impersonation, typosquatting, and social-engineering risk.
 Return ONLY valid JSON. Provide BOTH English and Arabic for every text field.
 verdict: "safe" | "suspicious" | "phishing" | "malicious".
@@ -44,8 +44,6 @@ comparedDomain: if impersonates is set, give the OFFICIAL domain (e.g. "mc.gov.s
 comparison: if impersonates is set, return a 4-7 item ARRAY comparing the FAKE vs the REAL site side-by-side. Each item: { aspect, aspectAr, fake, fakeAr, real, realAr }. Aspects MUST include: Domain Name, SSL/HTTPS, Logo & Branding, URL Structure, Login Page, Contact/Legal info, Page Quality. Be SPECIFIC (mention character differences, suspicious TLDs, typos). If not impersonating anything, return [].
 Arrays: 3-5 short items each (<18 words).
 Focus on: domain reputation, typosquatting, suspicious TLDs (.tk, .xyz, .top), subdomain abuse, IDN homograph, URL length, encoded chars, look-alike to official sites, HTTPS/SSL.`;
-
-const BEGINNER_ADDON = `\n\nBEGINNER MODE: The reader is a student / non-technical user. Write EVERY text field (English AND Arabic) in simple language. Define every technical term inline (e.g. "SSL — the small lock icon that shows the site is encrypted"). Use short friendly sentences and analogies. No jargon.`;
 
 const SCHEMA = `{
   "verdict": "safe|suspicious|phishing|malicious",
@@ -72,18 +70,17 @@ function parseDomain(url: string): string {
 }
 
 export const analyzeUrl = createServerFn({ method: "POST" })
-  .inputValidator((d: { url: string; beginner?: boolean }) => {
+  .inputValidator((d: { url: string }) => {
     if (!d?.url || typeof d.url !== "string") throw new Error("url required");
     const trimmed = d.url.trim();
     if (trimmed.length < 4 || trimmed.length > 2000) throw new Error("invalid url length");
-    return { url: trimmed, beginner: Boolean(d.beginner) };
+    return { url: trimmed };
   })
   .handler(async ({ data }): Promise<UrlReport> => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
 
     const domain = parseDomain(data.url);
-    const SYSTEM = SYSTEM_BASE + (data.beginner ? BEGINNER_ADDON : "");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
