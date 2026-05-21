@@ -9,29 +9,31 @@ export const t: Dict = {
   nav_home: { en: "Home", ar: "الرئيسية" },
   nav_analyzer: { en: "Threat Analyzer", ar: "محلل التهديدات" },
   nav_url: { en: "URL Scanner", ar: "فاحص الروابط" },
+  nav_phone: { en: "Phone Scanner", ar: "فاحص الأرقام" },
   nav_dashboard: { en: "Dashboard", ar: "لوحة المخاطر" },
-  nav_news: { en: "Cyber News", ar: "أخبار الأمن" },
+  nav_news: { en: "Live Alerts", ar: "تنبيهات حية" },
   nav_about: { en: "About", ar: "من نحن" },
   hero_tag: { en: "AI-Powered Cybersecurity Intelligence", ar: "ذكاء أمن سيبراني مدعوم بالذكاء الاصطناعي" },
   hero_title: { en: "Detect. Analyze. Defend.", ar: "اكتشف. حلّل. دافع." },
   hero_sub: {
-    en: "Describe a suspicious activity or paste a suspicious link — our AI agent returns a forensic-grade cybersecurity report in seconds.",
-    ar: "صف نشاطاً مشبوهاً أو ألصق رابطاً مشبوهاً — وكيل الذكاء الاصطناعي يصدر تقريراً أمنياً متكاملاً خلال ثوانٍ.",
+    en: "Describe a suspicious activity, paste a link, or check a phone number — our AI agent returns a forensic-grade cybersecurity report in seconds.",
+    ar: "صف نشاطاً مشبوهاً، ألصق رابطاً، أو تحقّق من رقم هاتف — وكيل الذكاء الاصطناعي يصدر تقريراً أمنياً متكاملاً خلال ثوانٍ.",
   },
   cta_analyze: { en: "Analyze a Threat", ar: "حلّل تهديداً الآن" },
   cta_url: { en: "Scan a Link", ar: "افحص رابطاً" },
+  cta_phone: { en: "Check a Number", ar: "تحقّق من رقم" },
   cta_dashboard: { en: "Open Dashboard", ar: "افتح لوحة التحكم" },
   feature_1_t: { en: "Threat Type Detection", ar: "تحديد نوع التهديد" },
   feature_1_d: { en: "Phishing, malware, ransomware — classified instantly.", ar: "تصيّد، برمجيات خبيثة، فدية — تصنيف فوري." },
   feature_2_t: { en: "Fake Link Detection", ar: "كشف الروابط المزيفة" },
   feature_2_d: { en: "Detect phishing sites and government impersonation.", ar: "كشف المواقع المزيفة وانتحال الجهات الرسمية." },
-  feature_3_t: { en: "Risk Score 0–100", ar: "درجة الخطر 0–100" },
-  feature_3_d: { en: "Real-time visual danger meter.", ar: "مقياس خطر مرئي لحظي." },
+  feature_3_t: { en: "Scam Phone Calls", ar: "مكالمات الاحتيال" },
+  feature_3_d: { en: "Identify fraudulent numbers impersonating banks or government.", ar: "حدّد الأرقام الاحتيالية التي تنتحل البنوك والجهات الرسمية." },
   feature_4_t: { en: "Why Were You Targeted?", ar: "لماذا استُهدفت؟" },
   feature_4_d: { en: "Personalized AI explanation of the attacker's motive.", ar: "تفسير ذكي ومخصّص لدوافع المهاجم." },
 
   analyzer_title: { en: "AI Threat Analyzer", ar: "محلل التهديدات بالذكاء الاصطناعي" },
-  analyzer_sub: { en: "Describe what happened. Be as specific as possible.", ar: "صف ما حدث. كن دقيقاً قدر الإمكان." },
+  analyzer_sub: { en: "Describe what happened. Be as specific as possible — no length limit.", ar: "صف ما حدث. كن دقيقاً قدر الإمكان — بلا حد للطول." },
   placeholder: {
     en: "Example: I received an SMS claiming my bank account is locked, with a link to verify. I clicked it and entered my credentials...",
     ar: "مثال: وصلتني رسالة SMS تدعي أن حسابي البنكي معلّق، مع رابط للتحقق. ضغطت على الرابط وأدخلت بياناتي...",
@@ -57,7 +59,9 @@ export const t: Dict = {
   total_scans: { en: "Total Scans", ar: "إجمالي الفحوصات" },
   avg_risk: { en: "Average Risk", ar: "متوسط الخطر" },
   critical: { en: "Critical Threats", ar: "تهديدات حرجة" },
-  news_title: { en: "Live Cyber Threat News", ar: "أخبار التهديدات السيبرانية" },
+  news_title: { en: "Live Cyber Threat Feed", ar: "تنبيهات سيبرانية حية" },
+  news_sub: { en: "Real-time alerts on phishing campaigns, government impersonation, and active scam waves.", ar: "تنبيهات لحظية على حملات التصيّد وانتحال الجهات الرسمية وموجات الاحتيال." },
+  news_live: { en: "LIVE MONITORING", ar: "رصد مباشر" },
   about_title: { en: "About CyberMind AI", ar: "عن سايبر مايند AI" },
   about_p: {
     en: "CyberMind AI is an autonomous security agent that translates cryptic threats into actionable defense plans — built for analysts, founders, and everyday users.",
@@ -103,15 +107,30 @@ export const t: Dict = {
   verdict_phishing: { en: "Phishing", ar: "تصيّد" },
   verdict_malicious: { en: "Malicious", ar: "خبيث" },
 
-  // Beginner mode + voice + chatbot + comparison
-  beginner_mode: { en: "Beginner Mode", ar: "وضع المبتدئ" },
-  beginner_on: { en: "Beginner Mode: ON — simple language", ar: "وضع المبتدئ: مُفعّل — لغة مبسّطة" },
-  beginner_off: { en: "Beginner Mode: OFF — expert language", ar: "وضع المبتدئ: مُعطّل — لغة متخصصة" },
-  beginner_hint: { en: "Reports use simple language and define every technical term.", ar: "التقارير تُكتب بلغة بسيطة وتشرح كل مصطلح تقني." },
+  // Phone Scanner
+  phone_title: { en: "Scam Phone Detector", ar: "كاشف مكالمات الاحتيال" },
+  phone_sub: { en: "Check any phone number or describe the call. AI detects scammers impersonating banks, government, and social security.", ar: "تحقّق من أي رقم أو صف المكالمة. الذكاء الاصطناعي يكشف المحتالين الذين ينتحلون البنوك والجهات الحكومية والضمان الاجتماعي." },
+  phone_number: { en: "Phone Number", ar: "رقم الهاتف" },
+  phone_placeholder: { en: "+966 5XX XXX XXX", ar: "+966 5XX XXX XXX" },
+  phone_context: { en: "What did they say? (optional but recommended)", ar: "ماذا قالوا؟ (اختياري لكن موصى به)" },
+  phone_context_ph: { en: "Example: They said they're from the Ministry calling about an unpaid fine and asked me to transfer money to a personal account...", ar: "مثال: قالوا إنهم من الوزارة بخصوص مخالفة وطلبوا التحويل إلى حساب شخصي..." },
+  phone_scan: { en: "Analyze Call", ar: "حلّل المكالمة" },
+  phone_scam_score: { en: "Scam Probability", ar: "احتمالية الاحتيال" },
+  phone_fraud_type: { en: "Fraud Type", ar: "نوع الاحتيال" },
+  phone_impersonates: { en: "Impersonating", ar: "ينتحل" },
+  phone_manipulation: { en: "Manipulation Tactics", ar: "أساليب التلاعب" },
+  phone_red_flags: { en: "Red Flags", ar: "إشارات الخطر" },
+  phone_actions: { en: "What To Do Now", ar: "افعل الآن" },
+  phone_elderly: { en: "Elderly-Targeted Scam Warning", ar: "تحذير: احتيال يستهدف كبار السن" },
+  phone_elderly_sub: { en: "This pattern is commonly used against elderly victims. Share with family.", ar: "هذا النمط يُستخدم ضد كبار السن. شارك مع العائلة." },
+
+  // Voice + chatbot + comparison
   voice_input: { en: "Voice Input", ar: "إدخال صوتي" },
   voice_listening: { en: "Listening… speak now", ar: "أستمع… تكلّم الآن" },
   bot_title: { en: "AI Security Assistant", ar: "المساعد الأمني الذكي" },
+  bot_status: { en: "Cybersecurity Expert · Online", ar: "خبير أمن سيبراني · متصل" },
   bot_open: { en: "Ask AI Assistant", ar: "اسأل المساعد الذكي" },
+  bot_placeholder: { en: "Ask about any threat, scam, or how to stay safe…", ar: "اسأل عن أي تهديد أو احتيال أو كيف تبقى آمناً…" },
   compare_title: { en: "Fake vs Original Comparison", ar: "مقارنة المزيف مقابل الأصلي" },
   compare_sub: { en: "Side-by-side breakdown of how the fake site mimics the real one.", ar: "مقارنة جنباً إلى جنب تكشف كيف يقلّد الموقع المزيف الأصلي." },
   compare_fake: { en: "Suspicious Site", ar: "الموقع المشبوه" },
@@ -123,19 +142,15 @@ interface Ctx {
   lang: Lang;
   setLang: (l: Lang) => void;
   tr: (k: keyof typeof t) => string;
-  beginner: boolean;
-  setBeginner: (b: boolean) => void;
 }
 const LangCtx = createContext<Ctx | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
-  const [beginner, setBeginnerState] = useState<boolean>(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = (localStorage.getItem("cm_lang") as Lang) || "en";
     setLangState(saved);
-    setBeginnerState(localStorage.getItem("cm_beginner") === "1");
   }, []);
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -146,12 +161,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     if (typeof window !== "undefined") localStorage.setItem("cm_lang", l);
   };
-  const setBeginner = (b: boolean) => {
-    setBeginnerState(b);
-    if (typeof window !== "undefined") localStorage.setItem("cm_beginner", b ? "1" : "0");
-  };
   const tr = (k: keyof typeof t) => t[k][lang];
-  return <LangCtx.Provider value={{ lang, setLang, tr, beginner, setBeginner }}>{children}</LangCtx.Provider>;
+  return <LangCtx.Provider value={{ lang, setLang, tr }}>{children}</LangCtx.Provider>;
 }
 
 export function useLang() {
