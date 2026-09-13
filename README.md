@@ -43,7 +43,7 @@
    git clone https://github.com/rahafiihf/cybermind-ai.git
    cd cybermind-ai
 
-   ---
+  
 
 <div align="center">
 
