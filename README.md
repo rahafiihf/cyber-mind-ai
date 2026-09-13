@@ -40,5 +40,24 @@
 
 1. **استنساخ المستودع (Clone):**
    ```bash
-   git clone [https://github.com/rahafiihf/cybermind-ai.git](https://github.com/rahafiihf/cybermind-ai.git)
+   git clone https://github.com/rahafiihf/cybermind-ai.git
    cd cybermind-ai
+
+   ---
+
+<div align="center">
+
+### 💡 تم التطوير بواسطة
+
+**Rahaf Alshaibani**  
+[![GitHub](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github)](https://github.com/rahafiihf)
+[![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/rahaf-alshaibani-bb3001329)
+
+---
+
+**Yasmin Alanazi**  
+[![GitHub](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github)](https://github.com/9yaa)
+[![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/yasmin-alanzi)
+
+
+</div>
