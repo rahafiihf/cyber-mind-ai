@@ -1,26 +1,44 @@
-# Your Story Keeper
+<div align="center">
 
-https://stitch.withgoogle.com/projects/5862247589921727786   ابيك تسويه
+# 🧠 CyberMind AI — AI-Powered Threat & Phishing Detector
 
-This project was built with [Lovable](https://lovable.dev).
+![Cybersecurity](https://img.shields.io/badge/Domain-Cybersecurity-red?style=for-the-badge&logo=shield&logoColor=white)
+![AI & ML](https://img.shields.io/badge/Focus-Fraud_&_Phishing_Detection-blue?style=for-the-badge&logo=openai&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 
-**Live app**: https://cyber-mind-ai-rjy.lovable.app
+<p align="center">
+  <b>مساعد ذكي ذو واجهة تفاعلية لتحليل الروابط المشبوهة واكتشاف محاولات الانتحال وهجمات التصيد الإلكتروني.</b><br />
+  مشروع مشترك أمني مصمم لمساعدة المستخدمين والفرق الأمنية على تقييم المخاطر السيبرانية بشكل لحظي.
+</p>
 
-## Build with Lovable
+</div>
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b200d3b4-9ac6-4888-9987-23c96b2acb90).
+---
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## ⚡ الميزات الرئيسية (Key Features)
 
-## Development
+* **🔍 تحليل الروابط (URL Inspection):** كشف روابط التصيد والروابط الخبيثة عبر تحليل النطاق والأنماط المشبوهة.
+* **🛡️ اكتشاف الانتحال (Impersonation Detection):** التحقق من رسائل البريد والمحاولات الاحتيالية المزيفة.
+* **📊 تقارير تقييم المخاطر (Risk Score):** تقديم درجة تقييم فورية لمستوى الخطر مع إرشادات الوقاية.
+* **🎨 واجهة سيبرانية تفاعلية:** لوحة تحكم عصرية وواضحة وسريعة الاستجابة.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+---
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+## 🛠️ التقنيات المستخدمة (Tech Stack)
+
+| المجال | التقنية |
+| :--- | :--- |
+| **Frontend Framework** | React.js (TypeScript) |
+| **Styling & UI** | Tailwind CSS, Lucide Icons |
+| **Build Tool** | Vite |
+| **Deployment** | Vercel |
+
+---
+
+## 💻 التشغيل المحلي (Local Setup)
+
+1. **استنساخ المستودع (Clone):**
+   ```bash
+   git clone [https://github.com/rahafiihf/cybermind-ai.git](https://github.com/rahafiihf/cybermind-ai.git)
+   cd cybermind-ai
